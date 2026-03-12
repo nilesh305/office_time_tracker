@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1070399594044",
+    "project_id": "officetimetracker-c5f1b",
+    "storage_bucket": "officetimetracker-c5f1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070399594044:android:b80e3e21bcd1007c302d39",
+        "android_client_info": {
+          "package_name": "com.example.office_time_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAULGk-mmoZbQ6ANCWk0MSqn0V1J94X2Hw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
