@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -7,12 +9,24 @@ import '../../../../core/constants/fonts.gen.dart';
 final historyProvider = FutureProvider((ref) async {
   final repo = ref.watch(workSessionRepositoryProvider);
   final timeViewModel = ref.read(timeViewModelProvider.notifier);
-  // TimeViewModel sets the user id in _userId, let's extract it or use auth
+  await repo.syncDownSessions(timeViewModel.userId);
   return repo.getAllSessions(timeViewModel.userId);
 });
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
+
+  List<Map<String, dynamic>> _parseBreakLogs(String jsonStr) {
+    try {
+      final decoded = jsonDecode(jsonStr) as List<dynamic>;
+      return decoded
+          .whereType<Map>()
+          .map((log) => Map<String, dynamic>.from(log))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
 
   String _formatDuration(int totalSeconds) {
     if (totalSeconds < 0) return "00:00:00";
@@ -48,6 +62,7 @@ class HistoryScreen extends ConsumerWidget {
               final checkOutStr = session.checkOutTime != null
                   ? DateFormat('hh:mm a').format(session.checkOutTime!)
                   : 'Active';
+              final breakLogs = _parseBreakLogs(session.breakLogsJson);
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -126,6 +141,29 @@ class HistoryScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
+                      if (breakLogs.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        const Divider(),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Break Times',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                fontFamily: FontFamily.poppins,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...breakLogs.map(
+                          (log) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: _BreakLogRow(
+                              startTime: log['startTime'] as String?,
+                              endTime: log['endTime'] as String?,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -156,6 +194,54 @@ class HistoryScreen extends ConsumerWidget {
             fontFamily: FontFamily.inter,
             fontWeight: FontWeight.w600,
             fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BreakLogRow extends StatelessWidget {
+  const _BreakLogRow({required this.startTime, required this.endTime});
+
+  final String? startTime;
+  final String? endTime;
+
+  String _formatTime(String? value) {
+    if (value == null) return 'Active';
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return '--:--';
+    return DateFormat('hh:mm a').format(parsed);
+  }
+
+  String _formatDuration(String? startValue, String? endValue) {
+    final start = startValue != null ? DateTime.tryParse(startValue) : null;
+    final end = endValue != null ? DateTime.tryParse(endValue) : null;
+    if (start == null || end == null) return 'In progress';
+
+    final seconds = end.difference(start).inSeconds;
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            '${_formatTime(startTime)} - ${_formatTime(endTime)}',
+            style: const TextStyle(fontFamily: FontFamily.inter),
+          ),
+        ),
+        Text(
+          _formatDuration(startTime, endTime),
+          style: TextStyle(
+            color: Colors.grey.shade700,
+            fontFamily: FontFamily.inter,
           ),
         ),
       ],

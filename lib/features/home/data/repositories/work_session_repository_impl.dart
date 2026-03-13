@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../domain/entities/work_session.dart';
 import '../../domain/repositories/work_session_repository.dart';
 import '../datasources/local_datasource.dart';
@@ -21,15 +23,9 @@ class WorkSessionRepositoryImpl implements WorkSessionRepository {
 
   @override
   Future<void> saveSession(WorkSession session) async {
+    session.isSyncedWithFirebase = false;
     await _localDataSource.saveSession(session);
-    // Real-time: attempt to sync to Firebase on *every* action
-    try {
-      await _remoteDataSource.syncSession(session);
-      session.isSyncedWithFirebase = true;
-      await _localDataSource.saveSession(session); // Update sync status
-    } catch (e) {
-      // Leave as unsynced if network fails
-    }
+    unawaited(_syncSessionInBackground(session));
   }
 
   @override
@@ -73,11 +69,35 @@ class WorkSessionRepositoryImpl implements WorkSessionRepository {
               isSyncedWithFirebase: true,
             );
             await _localDataSource.saveSession(newSession);
+          } else if (existingSession.isSyncedWithFirebase) {
+            existingSession.checkInTime = map['checkIn'] != null
+                ? DateTime.tryParse(map['checkIn'] as String)
+                : null;
+            existingSession.checkOutTime = map['checkOut'] != null
+                ? DateTime.tryParse(map['checkOut'] as String)
+                : null;
+            existingSession.totalBreakDuration =
+                map['breakDuration'] as int? ?? 0;
+            existingSession.workDuration = map['workDuration'] as int? ?? 0;
+            existingSession.breakLogsJson =
+                map['breakLogsJson'] as String? ?? '[]';
+            existingSession.isSyncedWithFirebase = true;
+            await _localDataSource.saveSession(existingSession);
           }
         }
       }
     } catch (e) {
       // Sync down failed (offline or other issue), gracefully ignore
+    }
+  }
+
+  Future<void> _syncSessionInBackground(WorkSession session) async {
+    try {
+      await _remoteDataSource.syncSession(session);
+      session.isSyncedWithFirebase = true;
+      await _localDataSource.saveSession(session);
+    } catch (_) {
+      // Keep the session marked as unsynced for a later retry.
     }
   }
 }

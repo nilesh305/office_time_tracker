@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pretty_logger/pretty_logger.dart';
 import '../providers/home_providers.dart';
 import '../viewmodels/time_viewmodel.dart';
 import '../../../../core/constants/fonts.gen.dart';
@@ -287,6 +288,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         GestureDetector(
                           onTap: () {
+                            PLog.green('Break Logs${timeState.breakLogsJson}');
                             if (timeState.breakLogsJson == '[]') return;
                             _showBreakLogsSheet(
                               context,
