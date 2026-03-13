@@ -1,71 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'objectbox/objectbox_setup.dart';
+import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/home/presentation/screens/home_screen.dart';
+import 'features/auth/presentation/providers/auth_providers.dart';
 
 void main() async {
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase (Assuming firebase_options.dart is generated later via Flutterfire CLI)
+  // For now using the default initialization. This might throw an exception if config is missing,
+  // but keeping it as a boilerplate.
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init error: $e. Did you run flutterfire configure?');
+  }
+  
+  // Initialize ObjectBox (placeholder)
+  await ObjectBoxSetup.init();
+  
+  try {
+    await GoogleSignIn.instance.initialize(
+      clientId: '1070399594044-12345678901234567890.apps.googleusercontent.com',
+    );
+  } catch (e) {
+    debugPrint('GoogleSignIn init error: $e');
+  }
+  
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authViewModelProvider);
+
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      title: 'Office Time Tracker',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      home: authState.isAuthenticated ? const HomeScreen() : const LoginScreen(),
     );
   }
 }
