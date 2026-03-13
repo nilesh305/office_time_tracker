@@ -8,6 +8,7 @@ import 'features/home/presentation/screens/home_screen.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'core/services/workmanager_setup.dart';
 
 void main() async {
   await init();
@@ -23,8 +24,11 @@ Future<void> init() async {
     debugPrint('Firebase init error: $e. Did you run flutterfire configure?');
   }
 
-  // Initialize ObjectBox (placeholder)
+  // Initialize ObjectBox
   await ObjectBoxSetup.init();
+
+  // Initialize Workmanager
+  await WorkmanagerSetup.init();
 
   try {
     await GoogleSignIn.instance.initialize(
@@ -45,6 +49,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Office Time Tracker',
       themeMode: themeMode,
       theme: AppTheme.lightTheme,

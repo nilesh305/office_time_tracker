@@ -43,6 +43,9 @@ class AuthDatasource {
   }
 
   Future<void> signOut() async {
+    try {
+      await _googleSignIn.disconnect();
+    } catch (_) {}
     await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
   }
 
