@@ -6,16 +6,16 @@ class AuthDatasource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-  AuthDatasource({
-    FirebaseAuth? firebaseAuth,
-    GoogleSignIn? googleSignIn,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+  AuthDatasource({FirebaseAuth? firebaseAuth, GoogleSignIn? googleSignIn})
+    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+      _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
 
   Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-    final authz = await googleUser.authorizationClient.authorizationForScopes([]);
+    final authz = await googleUser.authorizationClient.authorizationForScopes([
+      'email',
+    ]);
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
     final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: authz?.accessToken,
@@ -28,8 +28,9 @@ class AuthDatasource {
   Future<UserCredential> signInWithApple() async {
     final appleIdCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [
+        // 'email',
         AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
+        // AppleIDAuthorizationScopes.fullName,
       ],
     );
 
@@ -43,10 +44,7 @@ class AuthDatasource {
   }
 
   Future<void> signOut() async {
-    await Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
+    await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
   }
 
   User? getCurrentUser() {

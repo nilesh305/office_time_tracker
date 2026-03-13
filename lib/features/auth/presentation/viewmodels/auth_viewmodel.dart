@@ -44,7 +44,11 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final user = await ref.read(loginWithGoogleUseCaseProvider).call();
-      state = state.copyWith(isLoading: false, isAuthenticated: true, user: user);
+      state = state.copyWith(
+        isLoading: false,
+        isAuthenticated: true,
+        user: user,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -54,7 +58,11 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final user = await ref.read(loginWithAppleUseCaseProvider).call();
-      state = state.copyWith(isLoading: false, isAuthenticated: true, user: user);
+      state = state.copyWith(
+        isLoading: false,
+        isAuthenticated: true,
+        user: user,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -64,7 +72,7 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       await ref.read(logoutUseCaseProvider).call();
-      state = AuthState(); 
+      state = AuthState();
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

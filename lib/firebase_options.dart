@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1070399594044',
     projectId: 'officetimetracker-c5f1b',
     storageBucket: 'officetimetracker-c5f1b.firebasestorage.app',
+    androidClientId: '1070399594044-b0f8naikqoq3tsq4edjp2665nph5ivkk.apps.googleusercontent.com',
+    iosClientId: '1070399594044-lgoqodvoukiu3ptbuhg1431qffh3osgo.apps.googleusercontent.com',
     iosBundleId: 'com.example.officeTimeTracker',
   );
+
 }

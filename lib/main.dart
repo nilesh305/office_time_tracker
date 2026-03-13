@@ -9,32 +9,28 @@ import 'features/auth/presentation/providers/auth_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase (Assuming firebase_options.dart is generated later via Flutterfire CLI)
-  // For now using the default initialization. This might throw an exception if config is missing,
-  // but keeping it as a boilerplate.
+
   try {
     await Firebase.initializeApp();
   } catch (e) {
     debugPrint('Firebase init error: $e. Did you run flutterfire configure?');
   }
-  
+
   // Initialize ObjectBox (placeholder)
   await ObjectBoxSetup.init();
-  
+
   try {
     await GoogleSignIn.instance.initialize(
-      clientId: '1070399594044-12345678901234567890.apps.googleusercontent.com',
+      // clientId:
+      //     "1070399594044-b0f8naikqoq3tsq4edjp2665nph5ivkk.apps.googleusercontent.com",
+      serverClientId:
+          '1070399594044-mfor5alkk5o73j2cp1gc6ukoph4a3if0.apps.googleusercontent.com',
     );
   } catch (e) {
     debugPrint('GoogleSignIn init error: $e');
   }
-  
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -50,7 +46,9 @@ class MyApp extends ConsumerWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: authState.isAuthenticated ? const HomeScreen() : const LoginScreen(),
+      home: authState.isAuthenticated
+          ? const HomeScreen()
+          : const LoginScreen(),
     );
   }
 }

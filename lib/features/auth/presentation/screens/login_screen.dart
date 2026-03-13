@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pretty_logger/pretty_logger.dart';
 import '../providers/auth_providers.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -13,7 +14,9 @@ class LoginScreen extends ConsumerWidget {
 
     // Listen to error states to show snackbar
     ref.listen<AuthState>(authViewModelProvider, (previous, next) {
-      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+      PLog.red(next.errorMessage.toString());
+      if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
@@ -40,8 +43,8 @@ class LoginScreen extends ConsumerWidget {
                 Text(
                   'Office Time Tracker',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),

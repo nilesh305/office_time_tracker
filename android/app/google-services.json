@@ -12,7 +12,28 @@
           "package_name": "com.example.office_time_tracker"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1070399594044-b0f8naikqoq3tsq4edjp2665nph5ivkk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.office_time_tracker",
+            "certificate_hash": "c6c496181ab0bd07866615c2c907c8c8d4dcd68f"
+          }
+        },
+        {
+          "client_id": "1070399594044-r9r7r58bk77e2vc59jdlt9posp0gutqe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.office_time_tracker",
+            "certificate_hash": "f2735990dfbbc76d047567082cc326ccac3b6147"
+          }
+        },
+        {
+          "client_id": "1070399594044-mfor5alkk5o73j2cp1gc6ukoph4a3if0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAULGk-mmoZbQ6ANCWk0MSqn0V1J94X2Hw"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070399594044-mfor5alkk5o73j2cp1gc6ukoph4a3if0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1070399594044-lgoqodvoukiu3ptbuhg1431qffh3osgo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.officeTimeTracker"
+              }
+            }
+          ]
         }
       }
     }
