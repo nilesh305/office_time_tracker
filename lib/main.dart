@@ -6,8 +6,15 @@ import 'objectbox/objectbox_setup.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_provider.dart';
 
 void main() async {
+  await init();
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
@@ -21,16 +28,12 @@ void main() async {
 
   try {
     await GoogleSignIn.instance.initialize(
-      // clientId:
-      //     "1070399594044-b0f8naikqoq3tsq4edjp2665nph5ivkk.apps.googleusercontent.com",
       serverClientId:
           '1070399594044-mfor5alkk5o73j2cp1gc6ukoph4a3if0.apps.googleusercontent.com',
     );
   } catch (e) {
     debugPrint('GoogleSignIn init error: $e');
   }
-
-  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -39,13 +42,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authViewModelProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
       title: 'Office Time Tracker',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
+      themeMode: themeMode,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: authState.isAuthenticated
           ? const HomeScreen()
           : const LoginScreen(),

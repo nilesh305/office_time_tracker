@@ -28,9 +28,8 @@ class AuthDatasource {
   Future<UserCredential> signInWithApple() async {
     final appleIdCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [
-        // 'email',
         AppleIDAuthorizationScopes.email,
-        // AppleIDAuthorizationScopes.fullName,
+        AppleIDAuthorizationScopes.fullName,
       ],
     );
 
